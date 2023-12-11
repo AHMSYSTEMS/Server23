@@ -1,0 +1,45 @@
+nombre: CI
+ 
+ 
+ENCENDIDO : [ empujar , flujo de trabajo_dispatch ]
+ 
+ 
+trabajos:
+ 
+  construir:
+ 
+ 
+    ejecuta -ON : windows-latest
+ 
+ 
+    pasos:
+ 
+    - nombre: Descargar
+ 
+      ejecute: Invoke-WebRequest https://bin . equinoccio . io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64 . zip -OutFile ngrok . cremallera
+ 
+    - nombre: Extracto
+ 
+      ejecutar: Expandir-Archivar ngrok . cremallera
+ 
+    - nombre: autenticación
+ 
+      correr: . \ngrok\ngrok . token de autenticación exe $Env:NGROK_AUTH_TOKEN
+ 
+      entorno:
+ 
+        NGROK_AUTH_TOKEN: $ { { secretos . NGROK_AUTH_TOKEN } }
+ 
+    - nombre: Habilitar TS
+ 
+      ejecutar: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-nombre "fDenyTSConnections" -Valor 0
+ 
+    - ejecutar: Enable-NetFirewallRule -DisplayGroup "Escritorio remoto"
+ 
+    - ejecutar: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -nombre "UserAuthentication" -Valor 1
+ 
+    - ejecutar: Set-LocalUser -Nombre "runneradmin" -Contraseña ( ConvertTo-SecureString -AsPlainText "P@ssw0rd!" -Force )
+ 
+    - nombre: Crear túnel
+ 
+      correr: . \ngrok\ngrok . exe tcp 3389
